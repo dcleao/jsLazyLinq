@@ -1,5 +1,5 @@
-/*  jsLinq JavaScript framework, version 0.1
- *  (c) 2010 Duarte Cunha Le�o
+﻿/*  jsLinq JavaScript framework, version 0.1
+ *  (c) 2010 Duarte Cunha Leão
  *
  *  jsLinq is freely distributable under the terms of an MIT-style license.
  *  For details, see the http://github.com/dcleao/jsLinq
