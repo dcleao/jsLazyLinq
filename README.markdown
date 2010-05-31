@@ -1,4 +1,4 @@
-jsLinq
+﻿jsLinq
 =======
 
 This library brings the flavour of .Net's LINQ - [Language Integrated Query](http://msdn.microsoft.com/en-us/netframework/aa904594.aspx) - to JavaScript.
