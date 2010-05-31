@@ -1,4 +1,14 @@
+/*  jsLinq JavaScript framework, version 0.1
+ *  (c) 2010 Duarte Cunha Leão
+ *
+ *  jsLinq is freely distributable under the terms of an MIT-style license.
+ *  For details, see the http://github.com/dcleao/jsLinq
+ *--------------------------------------------------------------------------*/
 (function(_){
+	
+	_.jsLinq = {
+		Version: '0.1'
+	};
 	
 	var _slice = Array.prototype.slice,
 		_break = {},
