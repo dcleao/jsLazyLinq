@@ -3,14 +3,14 @@ jsLinq
 
 This library brings the flavour of .Net's LINQ - [Language Integrated Query](http://msdn.microsoft.com/en-us/netframework/aa904594.aspx) - to JavaScript.
 
-**NOT** that you can start writing with the LINQ's «query comprehension syntax»; as an example, in C# that would be:
+**NOT** that you can start writing with the LINQ's *query comprehension syntax*; as an example, in C# that would be:
 
-var query = (from candidate in candidates
+	 var query = (from candidate in candidates
 			 where candidate.Age <= 40
 			 where candidate.IQ  >= 200
 			 select candidate.Name);
 
-**INSTEAD**, this library enables writing something like the C#'s LINQ "lambda syntax":
+**INSTEAD**, this library enables writing something like the C#'s LINQ *lambda syntax*:
 
 	var query = candidates.
 				 Where (function(candidate){ return candidate.Age <= 40;  }).
