@@ -3,7 +3,10 @@
 
 This library brings the flavour of .Net's LINQ - [Language Integrated Query](http://msdn.microsoft.com/en-us/netframework/aa904594.aspx) - to JavaScript.
 
-**NOT** that you can start writing with the LINQ's *query comprehension syntax*; as an example, in C# that would be:
+What it can do
+--------------
+
+It's **NOT** that you can start writing with the LINQ's *query comprehension syntax*; as an example, in C# that would be:
 
 	 var query = (from candidate in candidates
 			 where candidate.Age <= 40
@@ -47,5 +50,25 @@ Then, *map* gets the name of each candidate, materializing into yet another arra
 Finally ... well, we were only interested in the first candidate's name.
 
 *It's really not the right way to do such a query, but unfortunately, it's the way many people __USE__ prototype and jQuery.*
+Even other available so called "LINQ" JavaScript libraries materialize intermediate results, totally missing the spirit of LINQ and .Net enumerables.
 
 This library offers query operators which are *lazy* by nature.
+
+Integration
+------------
+This library *can* be used standalone, being able to enumerate and query any array or *array-like* JavaScript object — any object with a numeric-valued `length` property, like the DOM NodeList (some other well-known objects with a length property are explicitly excluded).
+
+If you use [prototype.js](http://github.com/sstephenson/prototype) a file is supplied that integrates this library with it, enabling transparent enumeration and querying of any *prototype.js* `Enumerable` object.
+
+The integration mechanism was thought to be as simple as possible, so integrating with other libraries should be fairly easy to accomplish.
+
+Design Goals
+------------
+* Lazy nature - using the Query design pattern
+* Emphasis on primitives
+* Bringing .Net flavour to JavaScript (the reason why public members are Pascal cased)
+* Keeping .Net LINQ's naming and method signatures whenever applicable
+* Being JavaScript framework independent - being usable standalone
+* Easy integration with other JavaScript frameworks
+* Debuggability - no anonymous functions everywhere - methods where it is likely to *break-in-debug* have names
+* Clean & clear code
