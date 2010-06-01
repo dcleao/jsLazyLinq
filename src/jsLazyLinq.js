@@ -1,4 +1,4 @@
-﻿/*  jsLazyLinq JavaScript framework, version 0.1.1
+/*  jsLazyLinq JavaScript framework, version 0.1.1
 *  (c) 2010 Duarte Cunha Leão
 *
 *  jsLazyLinq is freely distributable under the terms of an MIT-style license.
