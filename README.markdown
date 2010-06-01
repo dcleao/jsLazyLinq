@@ -59,7 +59,7 @@ Integration
 ------------
 This library *can* be used standalone, being able to enumerate and query any array or *array-like* JavaScript object — any object with a numeric-valued `length` property, like the DOM `NodeList` (some other well-known objects with a `length` property are explicitly excluded).
 
-If you use [prototype.js](http://github.com/sstephenson/prototype) a file is supplied that integrates this library with it, enabling transparent enumeration and querying of any *prototype.js* `Enumerable` object.
+If you use [prototype.js](http://github.com/sstephenson/prototype), an integration file is already supplied, enabling transparent enumeration and querying of any *prototype* `Enumerable` object.
 
 The integration mechanism was thought to be as simple as possible — integrating with other libraries should be easy to accomplish.
 
