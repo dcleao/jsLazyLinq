@@ -470,7 +470,7 @@ function getTest(){
 	
 	test("'Concat' operator works", function(){
 		with(this) {
-			var q = Query.Concat([1,2,3,4,5], [6,7,8,9,10], [11,12]);
+			var q = Query.ConcatList([[1,2,3,4,5], [6,7,8,9,10], [11,12]]);
 			
 			assertEnumIdentical([1,2,3,4,5,6,7,8,9,10,11,12], q.ToArray());
 			

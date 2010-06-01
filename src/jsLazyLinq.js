@@ -1,4 +1,4 @@
-﻿/*  jsLazyLinq JavaScript framework, version 0.1
+﻿/*  jsLazyLinq JavaScript framework, version 0.1.1
 *  (c) 2010 Duarte Cunha Leão
 *
 *  jsLazyLinq is freely distributable under the terms of an MIT-style license.
@@ -7,12 +7,12 @@
 (function(_){
 
 	_.jsLazyLinq = {
-		Version: '0.1'
+		Version: '0.1.1'
 	};
 
 	var _slice = Array.prototype.slice,
 		_break = {},
-		_getGenerator = function(thing){};
+		_getGenerator;
 
 	function isFunction(value){
 		return typeof value === 'function';
@@ -545,7 +545,7 @@
 			return this.Select(createMethodCall(method, args));
 		},
 
-		// For Hash
+		// For Hash-like
 		Keys: function() {
 			// <Debug>
 			Assert.argumentCount(0);
