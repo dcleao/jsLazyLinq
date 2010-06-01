@@ -1,12 +1,12 @@
-﻿/*  jsLinq JavaScript framework, version 0.1
+﻿/*  jsLazyLinq JavaScript framework, version 0.1
 *  (c) 2010 Duarte Cunha Leão
 *
-*  jsLinq is freely distributable under the terms of an MIT-style license.
-*  For details, see the http://github.com/dcleao/jsLinq
+*  jsLazyLinq is freely distributable under the terms of an MIT-style license.
+*  For details, see the http://github.com/dcleao/jsLazyLinq
 *--------------------------------------------------------------------------*/
 (function(_){
 
-	_.jsLinq = {
+	_.jsLazyLinq = {
 		Version: '0.1'
 	};
 
