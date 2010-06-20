@@ -103,7 +103,7 @@
 	};
 	// </Debug>
 
-	function query_do(iterator, context) {
+	function qDo(iterator, context) {
 		// <Debug>
 		Assert.argumentNotNullFunc(iterator, 'iterator');
 		Assert.argumentCount(1, 2);
@@ -125,7 +125,7 @@
 		return this;
 	}
 
-	function query_generate(yield){
+	function qGenerate(yield){
 		if(this._yieldInterceptor){
 			yield = this._yieldInterceptor(yield);
 		}
@@ -136,7 +136,7 @@
 	// ---------------------------
 	// Reducers
 
-	function query_toArray() {
+	function qToArray() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
@@ -145,7 +145,7 @@
 		return result;
 	}
 
-	function query_count() {
+	function qCount() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
@@ -154,7 +154,7 @@
 		return count;
 	}
 
-	function query_exists() {
+	function qExists() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
@@ -166,7 +166,7 @@
 		return exists;
 	}
 
-	function query_any() {
+	function qAny() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
@@ -180,7 +180,7 @@
 		return result;
 	}
 
-	function query_all() {
+	function qAll() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
@@ -194,7 +194,7 @@
 		return result;
 	}
 
-	function query_first() {
+	function qFirst() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
@@ -206,7 +206,7 @@
 		return first;
 	}
 
-	function query_contains(value){
+	function qContains(value){
 		// <Debug>
 		Assert.argumentCount(1);
 		// </Debug>
@@ -220,57 +220,308 @@
 		return found;
 	}
 
-	function query_sum(){
+	function qSum(){
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
 		return this.Reduce(0, number_add);
 	}
 
-	function query_max() {
+	function qMax() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
 		var result;
 		this.Do(function(value) {
-		if (result == null || value > result)
-			result = value;
+			if (result == null || value > result)
+				result = value;
 		});
 		return result;
 	}
 
-	function query_min() {
+	function qMin() {
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
 		var result;
 		this.Do(function(value) {
-		if (result == null || value < result)
-			result = value;
+			if (result == null || value < result)
+				result = value;
 		});
 		return result;
 	}
 
-	function query_reduce(memo, combine, context) {
+	function qReduce(memo, combine, context) {
 		// <Debug>
 		Assert.argumentCount(2, 3);
 		// </Debug>
 		this.Do(function(value, index) {
-		memo = combine.call(context, memo, value, index);
+			memo = combine.call(context, memo, value, index);
 		});
 		return memo;
 	}
 
 	// ----------------------------
+	function qSelect(selector, context){
+		// <Debug>
+		Assert.argumentNotNullFunc(selector, 'selector');
+		Assert.argumentCount(1, 2);
+		// </Debug>
+		return this._intercept(function(yield){
 
-	function query_break(){
+			function qSelectYield(value){
+				yield( selector.call(context, value) );
+			}
+
+			return qSelectYield;
+		});
+	}
+	
+	function qSelectMany(selector, context){
+		// <Debug>
+		Assert.argumentNotNullFunc(selector, 'selector');
+		Assert.argumentCount(1, 2);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qSelectManyYield(value){
+				var values = selector.call(context, value);
+				if (values != null){
+					var query = $Q(values);
+					if (query) {
+						query._generate(yield);
+					} else {
+						yield( values );
+					}
+				}
+			}
+
+			return qSelectManyYield;
+		});
+	}
+	
+	function qWhere(predicate, context) {
+		// <Debug>
+		Assert.argumentNotNullFunc(predicate, 'predicate');
+		Assert.argumentCount(1, 2);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qWhereYield(value){
+				if(predicate.call(context, value)){
+					yield( value );
+				}
+			}
+
+			return qWhereYield;
+		});
+	}
+	
+	function qWhereNot(predicate, context) {
+		// <Debug>
+		Assert.argumentNotNullFunc(predicate, 'predicate');
+		Assert.argumentCount(1, 2);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qWhereNotYield(value){
+				if(!predicate.call(context, value)){
+					yield( value );
+				}
+			}
+
+			return qWhereNotYield;
+		});
+	}
+	
+	function qDistinct(keySelector, context) {
+		// <Debug>
+		Assert.argumentFunc(keySelector, 'keySelector');
+		Assert.argumentCount(0, 2);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			var keys = {};
+
+			function qDistinctYield(value){
+				var key = keySelector ? keySelector.call(context, value) : value;
+				key += ''; // convert to string
+				if(!keys.hasOwnProperty(key)){
+					keys[key] = true;
+					yield( value );
+				}
+			}
+
+			return qDistinctYield;
+		});
+	}
+	
+	function qFlatten(){
+		// <Debug>
+		Assert.argumentCount(0);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qFlattenYield(value){
+
+				var query = $Q(value);
+				if (query) {
+					query._generate(qFlattenYield);
+				} else {
+					yield( value );
+				}
+			}
+
+			return qFlattenYield;
+		});
+	}
+	
+	function qWhile(predicate, context) {
+		// <Debug>
+		Assert.argumentNotNullFunc(predicate, 'predicate');
+		Assert.argumentCount(1,2);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qWhileYield(value){
+				if (!predicate.call(context, value)) {
+					throw _break;
+				}
+
+				yield( value );
+			}
+
+			return qWhileYield;
+		});
+	}
+	
+	function qWhileNot(predicate, context) {
+		// <Debug>
+		Assert.argumentNotNullFunc(predicate, 'predicate');
+		Assert.argumentCount(1,2);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qWhileNotYield(value){
+				if (predicate.call(context, value)) {
+					throw _break;
+				}
+
+				yield( value );
+			}
+
+			return qWhileNotYield;
+		});
+	}
+	
+	function qConcat(){
+		return qConcatList([this].concat(_slice.apply(arguments)));
+	}
+	
+	function qGet(property) {
+		// <Debug>
+		Assert.argumentNotNullString(property, 'property');
+		Assert.argumentCount(1);
+		// </Debug>
+		return this.Select(function(o) { return o ? o[property] : undefined; });
+	}
+	
+	function qGetExisting(property) {
+		// <Debug>
+		Assert.argumentNotNullString(property, 'property');
+		Assert.argumentCount(1);
+		// </Debug>
+		return this._intercept(function(yield){
+
+			function qGetExistingYield(value){
+				if (value && (property in value)) {
+					yield( value[property] );
+				}
+			}
+
+			return qGetExistingYield;
+		});
+	}
+	
+	function qCall(method /*, arg1, arg2, ...*/) {
+		// <Debug>
+		Assert.argumentNotNullString(method, 'method');
+		// </Debug>
+		return this.Select(createMethodCall(method, _slice.call(arguments, 1)));
+	}
+	
+	function qApply(method, args) {
+		// <Debug>
+		Assert.argumentNotNullString(method, 'method');
+		Assert.argumentNotNullArrayLike(args, 'args');
+		Assert.argumentCount(2);
+		// </Debug>
+		return this.Select(createMethodCall(method, args));
+	}
+	
+	// For Hash-like
+	function qKeys() {
+		// <Debug>
+		Assert.argumentCount(0);
+		// </Debug>
+		return this.Select(getKey);
+	}
+	
+	function qValues() {
+		// <Debug>
+		Assert.argumentCount(0);
+		// </Debug>
+		return this.Select(getValue);
+	}
+	
+	// ----------------------------
+	// Static
+	
+	function qBreak(){
 		// <Debug>
 		Assert.argumentCount(0);
 		// </Debug>
 		return _break;
 	}
+	
+	function qInit(params){
+		// <Debug>
+		if(!params) throw Error.argumentNull('params');
+		Assert.argumentCount(1);
+		// </Debug>
 
-	function query_arrayLikeGenerator(yield){
+		if(params.breakSignal){
+			_break = params.breakSignal;
+		}
+
+		if('getGenerator' in params){
+			// <Debug>
+			Assert.argumentFunc(params.getGenerator, 'params.getGenerator');
+			// </Debug>
+			_getGenerator = params.getGenerator; // may be null
+		}
+	}
+	
+	function qConcatList(queries) {
+		// <Debug>
+		Assert.argumentNotNullArrayLike(queries, 'queries');
+		// </Debug>
+
+		function qConcat_generate(yield){
+			for(var i = 0, L = queries.length ; i < L ; i++){
+				var q = $Q(queries[i]);
+				if(!q){
+					throw new Error("Cannot convert argument to Query.");
+				}
+
+				q._generate(yield);
+			}
+		}
+
+		return new Query(qConcat_generate);
+	}
+	
+	function qArrayLikeGenerator(yield){
 		for(var i = 0, L = this.length ; i < L ; i++){
 			yield(this[i]);
 		}
@@ -283,7 +534,7 @@
 			}
 
 			if(isArrayLike(thing)){
-				return new Query(query_arrayLikeGenerator, thing);
+				return new Query(qArrayLikeGenerator, thing);
 			}
 
 			if(isFunction(thing)){
@@ -318,292 +569,83 @@
 			this._yieldInterceptor = yieldInterceptor;
 		}
 	}
-
+	
+	function copyDoubleCase(dest, source){
+		for(var p in source){
+			if(source.hasOwnProperty(p)){
+				var v 	  = source[p],
+					pc 	  = p.charAt(0),
+					prest = p.substr(1);
+				
+				dest[pc.toLowerCase() + prest] = v;
+				dest[pc.toUpperCase() + prest] = v;
+			}
+		}
+	}
+	
 	Query.prototype = {
 
-		_generate: 	query_generate,
+		_generate: 	qGenerate,
 
 		_intercept: function(yieldInterceptor){
 			// <Debug>
 			Assert.argumentNotNullFunc(yieldInterceptor, 'yieldInterceptor');
 			Assert.argumentCount(1);
 			// </Debug>
-			return new Query(query_generate, this, yieldInterceptor);
+			return new Query(qGenerate, this, yieldInterceptor);
 		},
 
+		Do:	qDo
+	};
+	
+	copyDoubleCase(Query.prototype, {
 		// -----------------------
 		// To leave the query
-		Do:      	query_do,
-		ToArray:   	query_toArray,
-		Reduce:    	query_reduce,
-		Count:		query_count,
-		Exists:		query_exists,
-		Any:		query_any,
-		All: 	  	query_all,
-		First: 	   	query_first,
-		Contains:  	query_contains,
-		Sum:	   	query_sum,
-		Max:       	query_max,
-		Min:	   	query_min,
+		each:		qDo,
+		toArray:	qToArray,
+		reduce:		qReduce,
+		count:		qCount,
+		exists:		qExists,
+		any:		qAny,
+		all: 	  	qAll,
+		first: 		qFirst,
+		contains:  	qContains,
+		sum:		qSum,
+		max:		qMax,
+		min:		qMin,
 
 		// -----------------------
 		// To refine the query
-		Select: function(selector, context){
-			// <Debug>
-			Assert.argumentNotNullFunc(selector, 'selector');
-			Assert.argumentCount(1, 2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_select_yield(value){
-					yield( selector.call(context, value) );
-				}
-
-				return query_select_yield;
-			});
-		},
-
-		SelectMany: function(selector, context){
-			// <Debug>
-			Assert.argumentNotNullFunc(selector, 'selector');
-			Assert.argumentCount(1, 2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_selectMany_yield(value){
-					var values = selector.call(context, value);
-					if (values != null){
-						var query = $Q(values);
-						if (query) {
-							query._generate(yield);
-						} else {
-							yield( values );
-						}
-					}
-				}
-
-				return query_selectMany_yield;
-			});
-		},
-
-		Where: function(predicate, context) {
-			// <Debug>
-			Assert.argumentNotNullFunc(predicate, 'predicate');
-			Assert.argumentCount(1, 2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_where_yield(value){
-					if(predicate.call(context, value)){
-						yield( value );
-					}
-				}
-
-				return query_where_yield;
-			});
-		},
-
-		WhereNot: function(predicate, context) {
-			// <Debug>
-			Assert.argumentNotNullFunc(predicate, 'predicate');
-			Assert.argumentCount(1, 2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_whereNot_yield(value){
-					if(!predicate.call(context, value)){
-						yield( value );
-					}
-				}
-
-				return query_whereNot_yield;
-			});
-		},
-
-		Distinct: function(keySelector, context) {
-			// <Debug>
-			Assert.argumentFunc(keySelector, 'keySelector');
-			Assert.argumentCount(0, 2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				var keys = {};
-
-				function query_distinct_yield(value){
-					var key = keySelector ? keySelector.call(context, value) : value;
-					key += ''; // convert to string
-					if(!keys.hasOwnProperty(key)){
-						keys[key] = true;
-						yield( value );
-					}
-				}
-
-				return query_distinct_yield;
-			});
-		},
-
-		Flatten: function(){
-			// <Debug>
-			Assert.argumentCount(0);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_flatten_yield(value){
-
-					var query = $Q(value);
-					if (query) {
-						query._generate(query_flatten_yield);
-					} else {
-						yield( value );
-					}
-				}
-
-				return query_flatten_yield;
-			});
-		},
-
-		While: function(predicate, context) {
-			// <Debug>
-			Assert.argumentNotNullFunc(predicate, 'predicate');
-			Assert.argumentCount(1,2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_while_yield(value){
-					if (!predicate.call(context, value)) {
-						throw _break;
-					}
-
-					yield( value );
-				}
-
-				return query_while_yield;
-			});
-		},
-
-		WhileNot: function(predicate, context) {
-			// <Debug>
-			Assert.argumentNotNullFunc(predicate, 'predicate');
-			Assert.argumentCount(1,2);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_whileNot_yield(value){
-					if (predicate.call(context, value)) {
-						throw _break;
-					}
-
-					yield( value );
-				}
-
-				return query_whileNot_yield;
-			});
-		},
-
-		Concat: function(){
-			return Query.ConcatList([this].concat(_slice.apply(arguments)));
-		},
-
-		Get: function(property) {
-			// <Debug>
-			Assert.argumentNotNullString(property, 'property');
-			Assert.argumentCount(1);
-			// </Debug>
-			return this.Select(function(o) { return o ? o[property] : undefined; });
-		},
-
-		GetExisting: function(property) {
-			// <Debug>
-			Assert.argumentNotNullString(property, 'property');
-			Assert.argumentCount(1);
-			// </Debug>
-			return this._intercept(function(yield){
-
-				function query_getExisting_yield(value){
-					if (value && (property in value)) {
-						yield( value[property] );
-					}
-				}
-
-				return query_getExisting_yield;
-			});
-		},
-
-		Call: function(method /*, arg1, arg2, ...*/) {
-			// <Debug>
-			Assert.argumentNotNullString(method, 'method');
-			// </Debug>
-			return this.Select(createMethodCall(method, _slice.call(arguments, 1)));
-		},
-
-		Apply: function(method, args) {
-			// <Debug>
-			Assert.argumentNotNullString(method, 'method');
-			Assert.argumentNotNullArrayLike(args, 'args');
-			Assert.argumentCount(2);
-			// </Debug>
-			return this.Select(createMethodCall(method, args));
-		},
-
-		// For Hash-like
-		Keys: function() {
-			// <Debug>
-			Assert.argumentCount(0);
-			// </Debug>
-			return this.Select(getKey);
-		},
-
-		Values: function() {
-			// <Debug>
-			Assert.argumentCount(0);
-			// </Debug>
-			return this.Select(getValue);
-		}
-	};
-
-	Query.ArrayLikeGenerator = query_arrayLikeGenerator; // mainly for tests
-	Query.Break  = query_break;
-	Query.Create = $Q;
-	Query.Init = function(params){
-		// <Debug>
-		if(!params) throw Error.argumentNull('params');
-		Assert.argumentCount(1);
-		// </Debug>
-
-		if(params.breakSignal){
-			_break = params.breakSignal;
-		}
-
-		if('getGenerator' in params){
-			// <Debug>
-			Assert.argumentFunc(params.getGenerator, 'params.getGenerator');
-			// </Debug>
-			_getGenerator = params.getGenerator; // may be null
-		}
-	};
-
-	Query.ConcatList = function(queries) {
-		// <Debug>
-		Assert.argumentNotNullArrayLike(queries, 'queries');
-		// </Debug>
-
-		function query_concat_generate(yield){
-			for(var i = 0, L = queries.length ; i < L ; i++){
-				var q = $Q(queries[i]);
-				if(!q){
-					throw new Error("Cannot convert argument to Query.");
-				}
-
-				q._generate(yield);
-			}
-		}
-
-		return new Query(query_concat_generate);
-	};
-
+		select: 	qSelect,
+		selectMany: qSelectMany, 
+		where: 		qWhere,
+		whereNot: 	qWhereNot,
+		distinct:	qDistinct,
+		flatten: 	qFlatten, 
+		doWhile:	qWhile,
+		doWhileNot: qWhileNot,
+		concat: 	qConcat, 
+		get: 		qGet, 
+		getExisting: qGetExisting, 
+		call: 		qCall, 
+		apply: 		qApply, 
+		keys: 		qKeys, 
+		values: 	qValues
+	});
+	
+	Query.$break = 
+	Query.Break  = qBreak;
+	
+	copyDoubleCase(Query, {
+		arrayLikeGenerator: qArrayLikeGenerator, // mainly for tests
+		create:		$Q,
+		init: 		qInit,
+		concatList:	qConcatList
+	});
+	
 	// ----------------------------
 
-	// Exports
+	// Global Exports
 	_.Query = Query;
 	_.$Q    = $Q;
 })(this);

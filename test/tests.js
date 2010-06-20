@@ -424,45 +424,45 @@ function getTest(){
 		}
 	});
 	
-	test("'While' operator works", function(){
+	test("'DoWhile' operator works", function(){
 		with(this) {
 			var context = { max: 10 };
 			var q = $Q([1, 5, 2, 10, 3]).
-					While(function(n){ return n < this.max; }, context);
+					DoWhile(function(n){ return n < this.max; }, context);
 			
 			assertEnumIdentical([1, 5, 2], q.ToArray());
 			
 			// <Debug>
 			assertRaise('argumentNull', function(){
-				new $Q([]).While(null);
+				new $Q([]).DoWhile(null);
 			});
 			assertRaise('argumentType', function(){
-				new $Q([]).While('foo');
+				new $Q([]).DoWhile('foo');
 			});
 			assertRaise('argumentCount', function(){
-				new $Q([]).While(function(){}, null, 1);
+				new $Q([]).DoWhile(function(){}, null, 1);
 			});
 			// </Debug>
 		}
 	});
 	
-	test("'WhileNot' operator works", function(){
+	test("'DoWhileNot' operator works", function(){
 		with(this) {
 			var context = { max: 10 };
 			var q = $Q([11, 10, 2, 10, 3]).
-					WhileNot(function(n){ return n < this.max; }, context);
+					DoWhileNot(function(n){ return n < this.max; }, context);
 			
 			assertEnumIdentical([11, 10], q.ToArray());
 			
 			// <Debug>
 			assertRaise('argumentNull', function(){
-				new $Q([]).WhileNot(null);
+				new $Q([]).DoWhileNot(null);
 			});
 			assertRaise('argumentType', function(){
-				new $Q([]).WhileNot('foo');
+				new $Q([]).DoWhileNot('foo');
 			});
 			assertRaise('argumentCount', function(){
-				new $Q([]).WhileNot(function(){}, null, 1);
+				new $Q([]).DoWhileNot(function(){}, null, 1);
 			});
 			// </Debug>
 		}
