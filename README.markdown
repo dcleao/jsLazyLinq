@@ -16,20 +16,20 @@ It's **NOT** that you can start writing with the LINQ's *query comprehension syn
 **INSTEAD**, this library enables writing something like the C#'s LINQ *lambda syntax*:
 
 	var query = candidates.
-				 Where (function(candidate){ return candidate.Age <= 40;  }).
-				 Where (function(candidate){ return candidate.IQ  >= 200; }).
-				 Select(function(candidate){ return candidate.Name; });
+				 where (function(candidate){ return candidate.Age <= 40;  }).
+				 where (function(candidate){ return candidate.IQ  >= 200; }).
+				 select(function(candidate){ return candidate.Name; });
 
 Then a query can be used one or more times, as in:
 
 	var names = "";
-	query.Do(function(name){
+	query.do(function(name){
 		names += (name + "\n");
 	});
 
 Or, arguably better, as in:
 
-	var names = query.ToArray().join("\n");
+	var names = query.toArray().join("\n");
 
 So what's really new about this? What is it that you can't already do with [jQuery.js](http://github.com/jquery) or [prototype.js](http://github.com/sstephenson/prototype)?
 
@@ -67,7 +67,8 @@ Design Goals
 ------------
 * Lazy nature - using the Query design pattern
 * Emphasis on primitives
-* Bringing .Net flavour to JavaScript (the reason why public members are Pascal cased)
+* Bringing .Net flavour to JavaScript
+* Supporting both Pascal and Camel case for public members
 * Keeping .Net LINQ's naming and method signatures whenever applicable
 * Being JavaScript framework independent - being usable standalone
 * Easy integration with other JavaScript frameworks
