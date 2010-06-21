@@ -311,31 +311,6 @@ function getTest(){
 		}
 	});
 	
-	test("'WhereNot' operator works", function(){
-		with(this) {
-			var context = {
-				max: 10
-			};
-			
-			var q = $Q([1, 20, 2, 10, 3]).
-					WhereNot(function(n){ return n < this.max; }, context);
-			
-			assertEnumIdentical([20, 10], q.ToArray());
-			
-			// <Debug>
-			assertRaise('argumentNull', function(){
-				new $Q([]).WhereNot(null);
-			});
-			assertRaise('argumentType', function(){
-				new $Q([]).WhereNot('foo');
-			});
-			assertRaise('argumentCount', function(){
-				new $Q([]).WhereNot(function(){}, null, 1);
-			});
-			// </Debug>
-		}
-	});
-	
 	test("'Distinct' operator works", function(){
 		with(this) {
 			var context = {
@@ -424,45 +399,221 @@ function getTest(){
 		}
 	});
 	
-	test("'DoWhile' operator works", function(){
+	test("'Take' operator works", function(){
 		with(this) {
-			var context = { max: 10 };
 			var q = $Q([1, 5, 2, 10, 3]).
-					DoWhile(function(n){ return n < this.max; }, context);
+					Take(3);
 			
 			assertEnumIdentical([1, 5, 2], q.ToArray());
 			
+			q = $Q([1, 5, 2, 10, 3]).
+					Take(1);
+			
+			assertEnumIdentical([1], q.ToArray());
+			
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					Take(0);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([]).
+					Take(10);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([1,2,3]).
+				Take(10);
+			
+			assertEnumIdentical([1,2,3], q.ToArray());
+			
 			// <Debug>
 			assertRaise('argumentNull', function(){
-				new $Q([]).DoWhile(null);
+				new $Q([]).Take(null);
 			});
 			assertRaise('argumentType', function(){
-				new $Q([]).DoWhile('foo');
+				new $Q([]).Take('foo');
 			});
 			assertRaise('argumentCount', function(){
-				new $Q([]).DoWhile(function(){}, null, 1);
+				new $Q([]).Take(1, null);
 			});
 			// </Debug>
 		}
 	});
 	
-	test("'DoWhileNot' operator works", function(){
+	test("'TakeLast' operator works", function(){
 		with(this) {
-			var context = { max: 10 };
-			var q = $Q([11, 10, 2, 10, 3]).
-					DoWhileNot(function(n){ return n < this.max; }, context);
+			var q = $Q([1, 5, 2, 10, 3]).
+					TakeLast(3);
 			
-			assertEnumIdentical([11, 10], q.ToArray());
+			assertEnumIdentical([2, 10, 3], q.ToArray());
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					TakeLast(1);
+			
+			assertEnumIdentical([3], q.ToArray());
+			
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					TakeLast(0);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([]).
+					TakeLast(10);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([1,2,3]).
+				TakeLast(10);
+			
+			assertEnumIdentical([1,2,3], q.ToArray());
 			
 			// <Debug>
 			assertRaise('argumentNull', function(){
-				new $Q([]).DoWhileNot(null);
+				new $Q([]).TakeLast(null);
 			});
 			assertRaise('argumentType', function(){
-				new $Q([]).DoWhileNot('foo');
+				new $Q([]).TakeLast('foo');
 			});
 			assertRaise('argumentCount', function(){
-				new $Q([]).DoWhileNot(function(){}, null, 1);
+				new $Q([]).TakeLast(1, null);
+			});
+			// </Debug>
+		}
+	});
+	
+	test("'TakeWhile' operator works", function(){
+		with(this) {
+			var context = { max: 10 };
+			var q = $Q([1, 5, 2, 10, 3]).
+					TakeWhile(function(n){ return n < this.max; }, context);
+			
+			assertEnumIdentical([1, 5, 2], q.ToArray());
+			
+			// <Debug>
+			assertRaise('argumentNull', function(){
+				new $Q([]).TakeWhile(null);
+			});
+			assertRaise('argumentType', function(){
+				new $Q([]).TakeWhile('foo');
+			});
+			assertRaise('argumentCount', function(){
+				new $Q([]).TakeWhile(function(){}, null, 1);
+			});
+			// </Debug>
+		}
+	});
+	
+	test("'Skip' operator works", function(){
+		with(this) {
+			var q = $Q([1, 5, 2, 10, 3]).
+					Skip(3);
+			
+			assertEnumIdentical([10, 3], q.ToArray());
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					Skip(1);
+			
+			assertEnumIdentical([5,2,10,3], q.ToArray());
+			
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					Skip(5);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([]).
+					Skip(10);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([1,2,3]).
+				Skip(0);
+			
+			assertEnumIdentical([1,2,3], q.ToArray());
+			
+			// <Debug>
+			assertRaise('argumentNull', function(){
+				new $Q([]).Skip(null);
+			});
+			assertRaise('argumentType', function(){
+				new $Q([]).Skip('foo');
+			});
+			assertRaise('argumentCount', function(){
+				new $Q([]).Skip(1, null);
+			});
+			// </Debug>
+		}
+	});
+	
+	test("'SkipLast' operator works", function(){
+		with(this) {
+			var q = $Q([1, 5, 2, 10, 3]).
+					SkipLast(3);
+			
+			assertEnumIdentical([1,5], q.ToArray());
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					SkipLast(1);
+			
+			assertEnumIdentical([1,5,2,10], q.ToArray());
+			
+			
+			q = $Q([1, 5, 2, 10, 3]).
+					SkipLast(5);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([]).
+					SkipLast(10);
+			
+			assertEnumIdentical([], q.ToArray());
+			
+			
+			q = $Q([1,2,3]).
+				SkipLast(0);
+			
+			assertEnumIdentical([1,2,3], q.ToArray());
+			
+			// <Debug>
+			assertRaise('argumentNull', function(){
+				new $Q([]).SkipLast(null);
+			});
+			assertRaise('argumentType', function(){
+				new $Q([]).SkipLast('foo');
+			});
+			assertRaise('argumentCount', function(){
+				new $Q([]).SkipLast(1, null);
+			});
+			// </Debug>
+		}
+	});
+	
+	test("'SkipWhile' operator works", function(){
+		with(this) {
+			var context = { max: 10 };
+			var q = $Q([1, 5, 2, 10, 3]).
+					SkipWhile(function(n){ return n < this.max; }, context);
+			
+			assertEnumIdentical([10,3], q.ToArray());
+			
+			// <Debug>
+			assertRaise('argumentNull', function(){
+				new $Q([]).SkipWhile(null);
+			});
+			assertRaise('argumentType', function(){
+				new $Q([]).SkipWhile('foo');
+			});
+			assertRaise('argumentCount', function(){
+				new $Q([]).SkipWhile(function(){}, null, 1);
 			});
 			// </Debug>
 		}
@@ -470,7 +621,7 @@ function getTest(){
 	
 	test("'Concat' operator works", function(){
 		with(this) {
-			var q = Query.ConcatList([[1,2,3,4,5], [6,7,8,9,10], [11,12]]);
+			var q = Query.Concat([[1,2,3,4,5], [6,7,8,9,10], [11,12]]);
 			
 			assertEnumIdentical([1,2,3,4,5,6,7,8,9,10,11,12], q.ToArray());
 			
@@ -486,7 +637,37 @@ function getTest(){
 			
 			assertIdentical(7, count);
 			
-			// Something not convertible no a query
+			// Something not convertible to a query
+			assertRaise('Error', function(){
+				new $Q([]).Concat(null).ToArray();
+			});
+		}
+	});
+	
+	test("'Union' operator works", function(){
+		with(this) {
+			var q = Query.Union([[1,2,3,4,5], [6,7,8,9,10], [11,12]]);
+			
+			assertEnumIdentical([1,2,3,4,5,6,7,8,9,10,11,12], q.ToArray());
+			
+			// Really breaks the overall sequence traversal, not just the current one
+			var count = 0;
+			q.Do(function(n){
+				count++;
+				
+				if(n === 7){
+					throw new Query.Break();
+				}
+			});
+			
+			assertIdentical(7, count);
+			
+			
+			q = Query.Union([[1,2,3,4,5], [6,5,4,3], [11,1]]);
+			
+			assertEnumIdentical([1,2,3,4,5,6,11], q.ToArray());
+			
+			// Something not convertible to a query
 			assertRaise('Error', function(){
 				new $Q([]).Concat(null).ToArray();
 			});
@@ -844,7 +1025,7 @@ function getTest(){
 		}
 	});
 	
-	test("'Reduce' operator works", function(){
+	test("'Aggregate' operator works", function(){
 		with(this) {
 			var context = {
 				factor: 2
@@ -856,17 +1037,17 @@ function getTest(){
 			
 			var q = $Q([]);
 			
-			assertIdentical(0, q.Reduce(0, operation, context));
-			assertIdentical(1, q.Reduce(1, operation, context));
+			assertIdentical(0, q.Aggregate(0, operation, context));
+			assertIdentical(1, q.Aggregate(1, operation, context));
 			
 			q = $Q([1, 2]);
 			
-			assertIdentical(0, q.Reduce(0, operation, context));
-			assertIdentical(8, q.Reduce(1, operation, context));
+			assertIdentical(0, q.Aggregate(0, operation, context));
+			assertIdentical(8, q.Aggregate(1, operation, context));
 			
 			q = $Q([1, 2, 3]);
 			
-			assertIdentical(48, q.Reduce(1, operation, context));
+			assertIdentical(48, q.Aggregate(1, operation, context));
 		}
 	});
 	

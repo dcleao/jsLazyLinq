@@ -23,7 +23,7 @@ It's **NOT** that you can start writing with the LINQ's *query comprehension syn
 Then a query can be used one or more times, as in:
 
 	var names = "";
-	query.do(function(name){
+	query.each(function(name){
 		names += (name + "\n");
 	});
 
