@@ -5,9 +5,6 @@
 *  For details, see the http://github.com/dcleao/jsLazyLinq
 *--------------------------------------------------------------------------*/
 (function(_){
-// <YUIComp>
-"Query:nomunge, $Q:nomunge, qArrayLikeGenerator:nomunge, qUnionList:nomunge, qConcatList:nomunge, qInit:nomunge, qBreak:nomunge, qValues:nomunge, qKeys:nomunge, qApply:nomunge, qCall:nomunge, qGetExisting:nomunge, qGet:nomunge, qUnion:nomunge, qConcat:nomunge, qSkipLast:nomunge, qSkip:nomunge, qSkipWhile:nomunge, qTakeLast:nomunge, qTake:nomunge, qTakeWhile:nomunge, qFlatten:nomunge, qDistinct:nomunge, qWhere:nomunge, qSelectMany:nomunge, qSelect:nomunge, qAggregate:nomunge, qMin:nomunge, qMax:nomunge, qSum:nomunge, qContains:nomunge, qFirst:nomunge, qAll:nomunge, qAny:nomunge, qExists:nomunge, qCount:nomunge, qToArray:nomunge, qNullYield:nomunge, qGenerate:nomunge, qDo:nomunge";
-// </YUIComp>
 	_.jsLazyLinq = {
 		Version: '0.1.2'
 	};
@@ -49,72 +46,8 @@
 
 		return methodCall;
 	}
-	// <Debug>
-	
-	var Errors = {
-		argumentNull: function(name){
-			var ex = new Error("Argument '" + name + "' is null");
-			ex.name = "argumentNull";
-			return ex;
-		},
-		
-		argumentType: function(name, type){
-			var ex = new Error("Argument '" + name + "' is not of type '" + type + "'");
-			ex.name = "argumentType";
-			return ex;
-		},
-
-		invalidOperation: function(message){
-			var ex = new Error("Invalid operation." + (message ? ("\n" + message) : "") );
-			ex.name = "invalidOperation";
-			return ex;
-		},
-
-		argumentCount: function(expected, actual){
-			var ex = new Error("Invalid argument count: " + actual + ". Expected: " + expected + ".");
-			ex.name = "argumentCount";
-			return ex;
-		}
-	};
-
-	var Assert = {
-		argumentNotNullFunc: function(value, name){
-			if(!value){ throw Errors.argumentNull(name); }
-			if(!isFunction(value)){ throw Errors.argumentType(name, 'function'); }
-		},
-
-		argumentFunc: function(value, name){
-			if(value && !isFunction(value)){ throw Errors.argumentType(name, 'function'); }
-		},
-
-		argumentNotNullString: function(value, name){
-			if(value == null){ throw Errors.argumentNull(name); }
-			if(typeof value !== 'string'){ throw Errors.argumentType(name, 'string'); }
-		},
-		
-		argumentNotNullNumber: function(value, name){
-			if(value == null){ throw Errors.argumentNull(name); }
-			if(typeof value !== 'number'){ throw Errors.argumentType(name, 'number'); }
-		},
-
-		argumentNotNullArrayLike: function(value, name){
-			if(value == null){ throw Errors.argumentNull(name); }
-			if(!isArrayLike(value)){ throw Errors.argumentType(name, 'array-like'); }
-		},
-
-		argumentCount: function(expectedMin, expectedMax){
-			var actual = arguments.callee.caller.arguments.length;
-			if(expectedMax == null && actual !== expectedMin) { throw Errors.argumentCount(expectedMin, actual); }
-			if(expectedMax != null && (actual < expectedMin || actual > expectedMax)) { throw Errors.argumentCount(expectedMin  + "-" + expectedMax, actual); }
-		}
-	};
-	// </Debug>
 
 	function qDo(iterator, context) {
-		// <Debug>
-		Assert.argumentNotNullFunc(iterator, 'iterator');
-		Assert.argumentCount(1, 2);
-		// </Debug>
 		var index = 0;
 
 		try {
@@ -141,36 +74,24 @@
 	}
 	
 	function qNullYield(value){
-		// <Debug>
-		Assert.argumentCount(1);
-		// </Debug>
 		throw _break;
 	}
 	
 	// ---------------------------
 	// Reducers
 	function qToArray() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var result = [];
 		this.Do(function(value){ result.push(value); });
 		return result;
 	}
 
 	function qCount() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var count = 0;
 		this.Do(function(){ count++; });
 		return count;
 	}
 
 	function qExists() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var exists = false;
 		this.Do(function() {
 			exists = true;
@@ -180,9 +101,6 @@
 	}
 
 	function qAny() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var result = false;
 		this.Do(function(value) {
 			result = !!value;
@@ -194,9 +112,6 @@
 	}
 
 	function qAll() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var result = true;
 		this.Do(function(value) {
 			result = !!value;
@@ -208,9 +123,6 @@
 	}
 
 	function qFirst() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var first;
 		this.Do(function(value) {
 			first = value;
@@ -220,9 +132,6 @@
 	}
 
 	function qContains(value){
-		// <Debug>
-		Assert.argumentCount(1);
-		// </Debug>
 		var found = false;
 		this.Do(function(value2) {
 			if(value2 === value){
@@ -234,16 +143,10 @@
 	}
 
 	function qSum(){
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		return this.Aggregate(0, number_add);
 	}
 
 	function qMax() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var result;
 		this.Do(function(value) {
 			if (result == null || value > result)
@@ -253,9 +156,6 @@
 	}
 
 	function qMin() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		var result;
 		this.Do(function(value) {
 			if (result == null || value < result)
@@ -265,9 +165,6 @@
 	}
 
 	function qAggregate(memo, aggregator, context) {
-		// <Debug>
-		Assert.argumentCount(2, 3);
-		// </Debug>
 		this.Do(function(value, index) {
 			memo = aggregator.call(context, memo, value, index);
 		});
@@ -276,14 +173,7 @@
 
 	// ----------------------------
 	function qSelect(selector, context){
-		// <Debug>
-		Assert.argumentNotNullFunc(selector, 'selector');
-		Assert.argumentCount(1, 2);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qSelectYield:nomunge";
-			// </YUIComp>
 			
 			function qSelectYield(value){
 				yield( selector.call(context, value) );
@@ -294,14 +184,7 @@
 	}
 	
 	function qSelectMany(selector, context){
-		// <Debug>
-		Assert.argumentNotNullFunc(selector, 'selector');
-		Assert.argumentCount(1, 2);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qSelectManyYield:nomunge";
-			// </YUIComp>
 			
 			function qSelectManyYield(value){
 				var values = selector.call(context, value);
@@ -320,14 +203,7 @@
 	}
 	
 	function qWhere(predicate, context) {
-		// <Debug>
-		Assert.argumentNotNullFunc(predicate, 'predicate');
-		Assert.argumentCount(1, 2);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qWhereYield:nomunge";
-			// </YUIComp>
 			
 			function qWhereYield(value){
 				if(predicate.call(context, value)){
@@ -340,14 +216,7 @@
 	}
 
 	function qDistinct(keySelector, context) {
-		// <Debug>
-		Assert.argumentFunc(keySelector, 'keySelector');
-		Assert.argumentCount(0, 2);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qDistinctYield:nomunge";
-			// </YUIComp>
 			
 			var keys = {};
 			
@@ -365,13 +234,7 @@
 	}
 	
 	function qFlatten(){
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qFlattenYield:nomunge";
-			// </YUIComp>
 			
 			function qFlattenYield(value){
 
@@ -388,14 +251,7 @@
 	}
 	
 	function qTakeWhile(predicate, context) {
-		// <Debug>
-		Assert.argumentNotNullFunc(predicate, 'predicate');
-		Assert.argumentCount(1,2);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qTakeWhileYield:nomunge";
-			// </YUIComp>
 			
 			function qTakeWhileYield(value){
 				if (!predicate.call(context, value)) {
@@ -410,14 +266,7 @@
 	}
 	
 	function qTake(count) {
-		// <Debug>
-		Assert.argumentNotNullNumber(count, 'count');
-		Assert.argumentCount(1);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qTakeYield:nomunge";
-			// </YUIComp>
 			
 			if(count <= 0){
 				return qNullYield;
@@ -436,14 +285,6 @@
 	}
 	
 	function qTakeLast(count) {
-		// <YUIComp>
-		"qTakeLast_generate:nomunge";
-		// </YUIComp>
-		// <Debug>
-		Assert.argumentNotNullNumber(count, 'count');
-		Assert.argumentCount(1);
-		
-		// </Debug>
 		if(count <= 0){
 			return this._intercept(function(yield){
 				return qNullYield;
@@ -462,14 +303,7 @@
 	}
 	
 	function qSkipWhile(predicate, context) {
-		// <Debug>
-		Assert.argumentNotNullFunc(predicate, 'predicate');
-		Assert.argumentCount(1,2);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qSkipWhileYield:nomunge";
-			// </YUIComp>
 			
 			var skip = true;
 			
@@ -490,14 +324,7 @@
 	}
 	
 	function qSkip(count) {
-		// <Debug>
-		Assert.argumentNotNullNumber(count, 'count');
-		Assert.argumentCount(1);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qSkipYield:nomunge";
-			// </YUIComp>
 			
 			function qSkipYield(value){
 				if (count > 0) {
@@ -513,10 +340,6 @@
 	
 	function qSkipLast(count) {
 		"qSkipLast_generate:nomunge";
-		// <Debug>
-		Assert.argumentNotNullNumber(count, 'count');
-		Assert.argumentCount(1);
-		// </Debug>
 		if(count <= 0){
 			return this;
 		}
@@ -542,22 +365,11 @@
 	}
 	
 	function qGet(property) {
-		// <Debug>
-		Assert.argumentNotNullString(property, 'property');
-		Assert.argumentCount(1);
-		// </Debug>
 		return this.Select(function(o) { return o ? o[property] : undefined; });
 	}
 	
 	function qGetExisting(property) {
-		// <Debug>
-		Assert.argumentNotNullString(property, 'property');
-		Assert.argumentCount(1);
-		// </Debug>
 		return this._intercept(function(yield){
-			// <YUIComp>
-			"qGetExistingYield:nomunge";
-			// </YUIComp>
 			
 			function qGetExistingYield(value){
 				if (value && (property in value)) {
@@ -570,33 +382,19 @@
 	}
 	
 	function qCall(method /*, arg1, arg2, ...*/) {
-		// <Debug>
-		Assert.argumentNotNullString(method, 'method');
-		// </Debug>
 		return this.Select(createMethodCall(method, _slice.call(arguments, 1)));
 	}
 	
 	function qApply(method, args) {
-		// <Debug>
-		Assert.argumentNotNullString(method, 'method');
-		Assert.argumentNotNullArrayLike(args, 'args');
-		Assert.argumentCount(2);
-		// </Debug>
 		return this.Select(createMethodCall(method, args));
 	}
 	
 	// For Hash-like
 	function qKeys() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		return this.Select(getKey);
 	}
 	
 	function qValues() {
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		return this.Select(getValue);
 	}
 	
@@ -604,37 +402,21 @@
 	// Static
 	
 	function qBreak(){
-		// <Debug>
-		Assert.argumentCount(0);
-		// </Debug>
 		return _break;
 	}
 	
 	function qInit(params){
-		// <Debug>
-		if(!params) throw Error.argumentNull('params');
-		Assert.argumentCount(1);
-		// </Debug>
 
 		if(params.breakSignal){
 			_break = params.breakSignal;
 		}
 
 		if('getGenerator' in params){
-			// <Debug>
-			Assert.argumentFunc(params.getGenerator, 'params.getGenerator');
-			// </Debug>
 			_getGenerator = params.getGenerator; // may be null
 		}
 	}
 	
 	function qConcatList(queries) {
-		// <YUIComp>
-		"qConcat_generate:nomunge";
-		// </YUIComp>
-		// <Debug>
-		Assert.argumentNotNullArrayLike(queries, 'queries');
-		// </Debug>
 
 		function qConcat_generate(yield){
 			for(var i = 0, L = queries.length ; i < L ; i++){
@@ -651,9 +433,6 @@
 	}
 	
 	function qUnionList(queries, keySelector, context) {
-		// <Debug>
-		Assert.argumentCount(0, 3);
-		// </Debug>
 		return qConcatList(queries).Distinct(keySelector, context);
 	}
 	
@@ -690,18 +469,11 @@
 	// -----------------------------
 
 	function Query(sourceGenerate, source, yieldInterceptor){
-		// <Debug>
-		Assert.argumentNotNullFunc(sourceGenerate, 'sourceGenerate');
-		Assert.argumentCount(1, 3);
-		// </Debug>
 
 		this._sourceGenerate = sourceGenerate;
 		this._source = source; // context
 
 		if(yieldInterceptor){
-			// <Debug>
-			Assert.argumentFunc(yieldInterceptor, 'yieldInterceptor');
-			// </Debug>
 			this._yieldInterceptor = yieldInterceptor;
 		}
 	}
@@ -724,10 +496,6 @@
 		_generate: 	qGenerate,
 
 		_intercept: function(yieldInterceptor){
-			// <Debug>
-			Assert.argumentNotNullFunc(yieldInterceptor, 'yieldInterceptor');
-			Assert.argumentCount(1);
-			// </Debug>
 			return new Query(qGenerate, this, yieldInterceptor);
 		},
 

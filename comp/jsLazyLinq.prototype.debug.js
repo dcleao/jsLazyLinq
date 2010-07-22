@@ -5,9 +5,6 @@
 *  For details, see the http://github.com/dcleao/jsLazyLinq
 *--------------------------------------------------------------------------*/
 (function(_){
-// <YUIComp>
-"queryAccessor:nomunge";
-// </YUIComp>
 
 	Query.Init({
 		breakSignal: $break,
